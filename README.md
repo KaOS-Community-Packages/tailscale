@@ -11,5 +11,5 @@ Tailscale is fast and reliable. Unlike traditional VPNs, which tunnel all networ
 
 #### Install:
 ```
-kcpi -i tailscale
+kcp -i tailscale
 ```
