@@ -7,7 +7,7 @@ Building on top of a secure network fabric, Tailscale offers speed, stability, a
 
 Tailscale is fast and reliable. Unlike traditional VPNs, which tunnel all network traffic through a central gateway server, Tailscale creates a peer-to-peer mesh network (called a tailnet).
 
-##### SOURCE: https://github.com/tailscale/tailscale | REPOSITORY: https://pkgs.tailscale.com/ | HOME: https://tailscale.com/
+##### [HOME](https://tailscale.com) | [SOURCE](https://github.com/tailscale/tailscale) | [REPOSITORY](https://pkgs.tailscale.com)
 
 #### Install:
 ```
