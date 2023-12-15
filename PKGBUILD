@@ -12,12 +12,12 @@ source=("${pkgname}-${pkgver}.tar.gz::https://github.com/tailscale/${pkgname}/ar
 sha256sums=('SKIP')
 
 prepare() {
-    cd "${pkgname}-${pkgver}/"
+    cd "${srcdir}/${pkgname}-${pkgver}"
     go mod vendor
 }
 
 build() {
-    cd "${pkgname}-${pkgver}/"
+    cd "${srcdir}/${pkgname}-${pkgver}"
     export CGO_CPPFLAGS="${CPPFLAGS}"
     export CGO_CFLAGS="${CFLAGS}"
     export CGO_CXXFLAGS="${CXXFLAGS}"
@@ -42,14 +42,14 @@ build() {
 # }
 
 package() {
-    install -dm755 "${pkgdir}/usr/bin/"
-    install -Dm755 "${srcdir}/${pkgname}-${pkgver}/tailscale" -t "${pkgdir}/usr/bin/"
-    install -Dm755 "${srcdir}/${pkgname}-${pkgver}/tailscaled" -t "${pkgdir}/usr/bin/"
-    install -Dm644 "${srcdir}/${pkgname}-${pkgver}/cmd/tailscaled/tailscaled.defaults" "${pkgdir}/etc/default/tailscaled"
-    install -Dm644 "${srcdir}/${pkgname}-${pkgver}/cmd/tailscaled/tailscaled.service" -t "${pkgdir}/usr/lib/systemd/system/"
-    install -Dm644 "${srcdir}/${pkgname}-${pkgver}/LICENSE" -t "${pkgdir}/usr/share/licenses/${pkgname}/"
-    install -dm755 "${pkgdir}/sbin"
-    install -dm755 "${pkgdir}/usr/sbin"
+    cd "${srcdir}/${pkgname}-${pkgver}/"
+    install -dm755 "${pkgdir}/usr/bin"
+    install -Dm755 "./tailscale" "./tailscaled" -t "${pkgdir}/usr/bin/"
+    install -Dm644 "./cmd/tailscaled/tailscaled.defaults" "${pkgdir}/etc/default/tailscaled"
+    install -Dm644 "./cmd/tailscaled/tailscaled.service" -t "${pkgdir}/usr/lib/systemd/system/"
+    install -Dm644 "./LICENSE" -t "${pkgdir}/usr/share/licenses/${pkgname}/"
+    install -dm755 "${pkgdir}/sbin/"
+    install -dm755 "${pkgdir}/usr/sbin/"
     ln -f "${pkgdir}/usr/bin/tailscaled" --target-directory="${pkgdir}/sbin/"
     ln -f "${pkgdir}/usr/bin/tailscaled" --target-directory="${pkgdir}/usr/sbin/"
 }
