@@ -1,11 +1,11 @@
 pkgname=tailscale
-pkgver=1.56.0
+pkgver=1.56.1
 pkgrel=1
 pkgdesc="A mesh VPN that makes it easy to connect your devices, wherever they are."
 arch=("x86_64")
 url="https://pkgs.tailscale.com/"
 license=("MIT")
-makedepends=( "go")
+makedepends=("go")
 depends=("glibc")
 backup=("etc/default/tailscaled")
 source=("${pkgname}-${pkgver}.tar.gz::https://github.com/tailscale/${pkgname}/archive/refs/tags/v${pkgver}.tar.gz") 
@@ -42,14 +42,14 @@ build() {
 # }
 
 package() {
-    cd "${srcdir}/${pkgname}-${pkgver}/"
     install -dm755 "${pkgdir}/usr/bin/"
-    install -Dm755 ./tailscale,{tailscaled} -t "${pkgdir}/usr/bin/"
-    install -Dm644 ./cmd/tailscaled/tailscaled.defaults "${pkgdir}/etc/default/tailscaled"
-    install -Dm644 ./cmd/tailscaled/tailscaled.service -t "${pkgdir}/usr/lib/systemd/system/"
-    install -Dm644 ./LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}/"
+    install -Dm755 "${srcdir}/${pkgname}-${pkgver}/tailscale" -t "${pkgdir}/usr/bin/"
+    install -Dm755 "${srcdir}/${pkgname}-${pkgver}/tailscaled" -t "${pkgdir}/usr/bin/"
+    install -Dm644 "${srcdir}/${pkgname}-${pkgver}/cmd/tailscaled/tailscaled.defaults" "${pkgdir}/etc/default/tailscaled"
+    install -Dm644 "${srcdir}/${pkgname}-${pkgver}/cmd/tailscaled/tailscaled.service" -t "${pkgdir}/usr/lib/systemd/system/"
+    install -Dm644 "${srcdir}/${pkgname}-${pkgver}/LICENSE" -t "${pkgdir}/usr/share/licenses/${pkgname}/"
     install -dm755 "${pkgdir}/sbin"
     install -dm755 "${pkgdir}/usr/sbin"
-    ln -f "${pkgdir}/usr/bin/tailscaled" "--target-directory=${pkgdir}/sbin/"
-    ln -f "${pkgdir}/usr/bin/tailscaled" "--target-directory=${pkgdir}/usr/sbin/"
+    ln -f "${pkgdir}/usr/bin/tailscaled" --target-directory="${pkgdir}/sbin/"
+    ln -f "${pkgdir}/usr/bin/tailscaled" --target-directory="${pkgdir}/usr/sbin/"
 }
