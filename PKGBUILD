@@ -23,7 +23,7 @@ build() {
     export CGO_CXXFLAGS="${CXXFLAGS}"
     export CGO_LDFLAGS="${LDFLAGS}"
     # pacman bug
-    # export GOPATH="${srcdir}"
+    # export GOPATH="${srcdir}/"
     export GOFLAGS="-buildmode=pie -mod=readonly -modcacherw"
     GO_LDFLAGS="\
         -compressdwarf=false \
@@ -37,7 +37,7 @@ build() {
 
 #TODO: Figure out why tests are failing
 # check() {
-#     cd "${pkgname}"
+#     cd "${pkgname}/"
 #     go test $(go list ./... | grep -v tsdns_test)
 # }
 
