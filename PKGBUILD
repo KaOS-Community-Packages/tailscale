@@ -1,5 +1,5 @@
 pkgname=tailscale
-pkgver=1.56.1
+pkgver=1.62.1
 pkgrel=1
 pkgdesc="A mesh VPN that makes it easy to connect your devices, wherever they are."
 arch=("x86_64")
@@ -13,17 +13,17 @@ sha256sums=('SKIP')
 
 prepare() {
     cd "${srcdir}/${pkgname}-${pkgver}"
+
     go mod vendor
 }
 
 build() {
     cd "${srcdir}/${pkgname}-${pkgver}"
+
     export CGO_CPPFLAGS="${CPPFLAGS}"
     export CGO_CFLAGS="${CFLAGS}"
     export CGO_CXXFLAGS="${CXXFLAGS}"
     export CGO_LDFLAGS="${LDFLAGS}"
-    # pacman bug
-    # export GOPATH="${srcdir}/"
     export GOFLAGS="-buildmode=pie -mod=readonly -modcacherw"
     GO_LDFLAGS="\
         -compressdwarf=false \
@@ -34,12 +34,6 @@ build() {
         go build -v -tags xversion -ldflags "$GO_LDFLAGS" "$cmd"
     done
 }
-
-#TODO: Figure out why tests are failing
-# check() {
-#     cd "${pkgname}/"
-#     go test $(go list ./... | grep -v tsdns_test)
-# }
 
 package() {
     cd "${srcdir}/${pkgname}-${pkgver}/"
