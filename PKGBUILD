@@ -1,5 +1,5 @@
 pkgname=tailscale
-pkgver=1.62.1
+pkgver=1.64.0
 pkgrel=1
 pkgdesc="A mesh VPN that makes it easy to connect your devices, wherever they are."
 arch=("x86_64")
@@ -8,8 +8,9 @@ license=("MIT")
 makedepends=("go")
 depends=("glibc")
 backup=("etc/default/tailscaled")
-source=("${pkgname}-${pkgver}.tar.gz::https://github.com/tailscale/${pkgname}/archive/refs/tags/v${pkgver}.tar.gz") 
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/tailscale/${pkgname}/archive/refs/tags/v${pkgver}.tar.gz")
 sha256sums=('SKIP')
+options=('!lto')
 
 prepare() {
     cd "${srcdir}/${pkgname}-${pkgver}"
@@ -25,25 +26,22 @@ build() {
     export CGO_CXXFLAGS="${CXXFLAGS}"
     export CGO_LDFLAGS="${LDFLAGS}"
     export GOFLAGS="-buildmode=pie -mod=readonly -modcacherw"
-    GO_LDFLAGS="\
-        -compressdwarf=false \
-        -linkmode=external \
-        -X tailscale.com/version.Long=${pkgver} \
-        -X tailscale.com/version.Short=$(cut -d+ -f1 <<< "${pkgver}")"
-    for cmd in ./cmd/tailscale ./cmd/tailscaled; do
+    GO_LDFLAGS="-compressdwarf=false -linkmode=external"
+
+    for cmd in "./cmd/tailscale" "./cmd/tailscaled"; do
         go build -v -tags xversion -ldflags "$GO_LDFLAGS" "$cmd"
     done
+
 }
 
 package() {
-    cd "${srcdir}/${pkgname}-${pkgver}/"
-    install -dm755 "${pkgdir}/usr/bin"
-    install -Dm755 "./tailscale" "./tailscaled" -t "${pkgdir}/usr/bin/"
-    install -Dm644 "./cmd/tailscaled/tailscaled.defaults" "${pkgdir}/etc/default/tailscaled"
-    install -Dm644 "./cmd/tailscaled/tailscaled.service" -t "${pkgdir}/usr/lib/systemd/system/"
-    install -Dm644 "./LICENSE" -t "${pkgdir}/usr/share/licenses/${pkgname}/"
+    install -Dm755 "${srcdir}/${pkgname}-${pkgver}"/tailscale{,d} -t "${pkgdir}/usr/bin/"
+    install -Dm644 "${srcdir}/${pkgname}-${pkgver}/cmd/tailscaled/tailscaled.defaults" "${pkgdir}/etc/default/tailscaled"
+    install -Dm644 "${srcdir}/${pkgname}-${pkgver}/cmd/tailscaled/tailscaled.service" -t "${pkgdir}/usr/lib/systemd/system/"
+    install -Dm644 "${srcdir}/${pkgname}-${pkgver}/LICENSE" -t "${pkgdir}/usr/share/licenses/${pkgname}/"
+
     install -dm755 "${pkgdir}/sbin/"
     install -dm755 "${pkgdir}/usr/sbin/"
-    ln -f "${pkgdir}/usr/bin/tailscaled" --target-directory="${pkgdir}/sbin/"
-    ln -f "${pkgdir}/usr/bin/tailscaled" --target-directory="${pkgdir}/usr/sbin/"
+    ln -v -f "${pkgdir}/usr/bin/tailscaled" --target-directory="${pkgdir}/sbin/"
+    ln -v -f "${pkgdir}/usr/bin/tailscaled" --target-directory="${pkgdir}/usr/sbin/"
 }
